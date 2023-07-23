@@ -1,132 +1,170 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
+using namespace std;
+
 struct Contact {
-    std::string name;
-    std::string phoneNumber;
-    std::string address;
+    string name;
+    string phoneNumber;
+    string address;
 };
 
-std::vector<Contact> addressBook;
+vector<Contact> addressBook;
+const string contactsFile = "contacts.txt";
+
+void loadContactsFromFile()
+{
+    ifstream file(contactsFile);
+    if (file.is_open()) {
+        Contact contact;
+        while (getline(file, contact.name) &&
+               getline(file, contact.phoneNumber) &&
+               getline(file, contact.address)) {
+            addressBook.push_back(contact);
+        }
+        file.close();
+    }
+}
+
+void saveContactsToFile()
+{
+    ofstream file(contactsFile);
+    if (file.is_open()) {
+        for (const auto& contact : addressBook) {
+            file << contact.name << '\n';
+            file << contact.phoneNumber << '\n';
+            file << contact.address << '\n';
+        }
+        file.close();
+    }
+}
 
 void addContact()
 {
     Contact newContact;
 
-    std::cout << "\n\t\tEnter name: ";
-    std::getline(std::cin, newContact.name);
+    cout << "\n\t\tEnter name: ";
+    getline(cin, newContact.name);
 
-    std::cout << "\t\tEnter phone number: ";
-    std::getline(std::cin, newContact.phoneNumber);
+    cout << "\t\tEnter phone number: ";
+    getline(cin, newContact.phoneNumber);
 
-    std::cout << "\t\tEnter address: ";
-    std::getline(std::cin, newContact.address);
+    cout << "\t\tEnter address: ";
+    getline(cin, newContact.address);
 
     addressBook.push_back(newContact);
+    saveContactsToFile();
 
-    std::cout << "\n\t\t\t\t\t\tContact added successfully!\n\n";
+    cout << "\n\t\t\t\t\t\tContact added successfully!\n\n";
 }
 
 void displayContacts()
 {
     if (addressBook.empty()) {
-        std::cout << "\n\t\t\t\t\t\tAddress book is empty!\n";
-        }
+        cout << "\n\t\t\t\t\t\tAddress book is empty!\n";
+    }
     else {
-        std::cout << "\n\t\t\t\t\tAddress Book:\n";
+        cout << "\n\t\t\t\t\tAddress Book:\n";
         for (const auto& contact : addressBook) {
-            std::cout << "\n\t\t\t\t\t\tName: " << contact.name << "\n";
-            std::cout << "\t\t\t\t\t\tPhone: " << contact.phoneNumber << "\n";
-            std::cout << "\t\t\t\t\t\tAddress: " << contact.address << "\n";
-            std::cout << "\n\t\t\t\t\t\t\t----------------\n\n";
+            cout << "\n\t\t\t\t\t\tName: " << contact.name << "\n";
+            cout << "\t\t\t\t\t\tPhone: " << contact.phoneNumber << "\n";
+            cout << "\t\t\t\t\t\tAddress: " << contact.address << "\n";
+            cout << "\n\t\t\t\t\t\t\t----------------\n\n";
         }
     }
 }
 
 void searchContact()
 {
-    std::string searchTerm;
-    std::cout << "\n\t\tEnter the name to search: ";
-    std::getline(std::cin, searchTerm);
+    string searchTerm;
+    cout << "\n\t\tEnter the name to search: ";
+    getline(cin, searchTerm);
 
-    std::vector<Contact> matchingContacts;
+    vector<Contact> matchingContacts;
 
     for (const auto& contact : addressBook) {
-        if (contact.name.find(searchTerm) != std::string::npos) {
+        if (contact.name.find(searchTerm) != string::npos) {
             matchingContacts.push_back(contact);
         }
     }
 
     if (matchingContacts.empty()) {
-        std::cout << "\n\t\t\t\t\t\tNo matching contacts found!\n\n";
-        }
+        cout << "\n\t\t\t\t\t\tNo matching contacts found!\n\n";
+    }
     else {
-        std::cout << "\n\t\t\t\t\tMatching Contacts:\n";
+        cout << "\n\t\t\t\t\tMatching Contacts:\n";
         for (const auto& contact : matchingContacts) {
-            std::cout << "\n\t\t\t\t\t\tName: " << contact.name << "\n";
-            std::cout << "\t\t\t\t\t\tPhone: " << contact.phoneNumber << "\n";
-            std::cout << "\t\t\t\t\t\tAddress: " << contact.address << "\n";
-            std::cout << "\n\t\t\t\t\t\t\t----------------\n\n";
+            cout << "\n\t\t\t\t\t\tName: " << contact.name << "\n";
+            cout << "\t\t\t\t\t\tPhone: " << contact.phoneNumber << "\n";
+            cout << "\t\t\t\t\t\tAddress: " << contact.address << "\n";
+            cout << "\n\t\t\t\t\t\t\t----------------\n\n";
         }
     }
 }
 
 void editContact()
 {
-    std::string searchTerm;
-    std::cout << "\n\t\tEnter the name of the contact to edit: ";
-    std::getline(std::cin, searchTerm);
+    string searchTerm;
+    cout << "\n\t\tEnter the name of the contact to edit: ";
+    getline(cin, searchTerm);
 
     for (auto& contact : addressBook) {
         if (contact.name == searchTerm) {
-            std::cout << "\n\t\t\tEnter new phone number: ";
-            std::getline(std::cin, contact.phoneNumber);
+            cout << "\n\t\t\tEnter new phone number: ";
+            getline(cin, contact.phoneNumber);
 
-            std::cout << "\t\t\tEnter new address: ";
-            std::getline(std::cin, contact.address);
+            cout << "\t\t\tEnter new address: ";
+            getline(cin, contact.address);
 
-            std::cout << "\n\t\t\t\t\t\tContact updated successfully!\n\n";
+            saveContactsToFile();
+
+            cout << "\n\t\t\t\t\t\tContact updated successfully!\n\n";
             return;
         }
     }
 
-    std::cout << "\n\t\t\t\t\t\tContact not found!\n\n";
+    cout << "\n\t\t\t\t\t\tContact not found!\n\n";
 }
 
 void deleteContact()
 {
-    std::string searchTerm;
-    std::cout << "\n\t\tEnter the name of the contact to delete: ";
-    std::getline(std::cin, searchTerm);
+    string searchTerm;
+    cout << "\n\t\tEnter the name of the contact to delete: ";
+    getline(cin, searchTerm);
 
     for (auto it = addressBook.begin(); it != addressBook.end(); ++it) {
         if (it->name == searchTerm) {
             addressBook.erase(it);
-            std::cout << "\n\t\t\t\t\t\tContact deleted successfully!\n\n";
+            saveContactsToFile();
+
+            cout << "\n\t\t\t\t\t\tContact deleted successfully!\n\n";
             return;
         }
     }
 
-    std::cout << "\n\t\t\t\t\t\tContact not found!\n\n";
+    cout << "\n\t\t\t\t\t\tContact not found!\n\n";
 }
 
 int main()
 {
+    loadContactsFromFile();
+
     char choice;
     do {
-        std::cout << "\t\t\t\t\t\tWelcome To My Addressbook!\n\t\t\t\t:) Please Choose the Action to be Done from the Menu :)\n\n";
-        std::cout << "Address Book Menu:\n\n";
-        std::cout << "1. Add Contact\n";
-        std::cout << "2. Display Contacts\n";
-        std::cout << "3. Search Contact\n";
-        std::cout << "4. Edit Contact\n";
-        std::cout << "5. Delete Contact\n";
-        std::cout << "6. Exit\n";
-        std::cout << "\n\tEnter your choice: ";
-        std::cin >> choice;
+        cout << "\t\t\t\t\t\tWelcome To My Addressbook!\n\t\t\t\t:) Please Choose the Action to be Done from the Menu :)\n\n";
+        cout << "Address Book Menu:\n\n";
+        cout << "1. Add Contact\n";
+        cout << "2. Display Contacts\n";
+        cout << "3. Search Contact\n";
+        cout << "4. Edit Contact\n";
+        cout << "5. Delete Contact\n";
+        cout << "6. Exit\n";
+        cout << "\n\tEnter your choice: ";
+        cin >> choice;
 
-        std::cin.ignore();
+        cin.ignore();
 
         switch (choice)
         {
@@ -146,10 +184,10 @@ int main()
                 deleteContact();
                 break;
             case '6':
-                std::cout << "\n\t\t\t\t\tExiting the program.....Press Enter or any key.\n";
+                cout << "\n\t\t\t\t\tExiting the program.....Press Enter or any key.\n";
                 break;
             default:
-                std::cout << "\n\t\t\t\t\t\tInvalid choice! Try again.\n\n";
+                cout << "\n\t\t\t\t\t\tInvalid choice! Try again.\n\n";
         }
     } while (choice != '6');
 
